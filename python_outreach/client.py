@@ -8,7 +8,7 @@ from requests.exceptions import ConnectionError
 
 from .exception import Server5xxError, RateLimitError, ValidationError
 
-LOGGER = logging.get_logger(name=__name__)
+LOGGER = logging.getLogger(name=__name__)
 
 
 class OutreachClient(object):
