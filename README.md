@@ -8,7 +8,6 @@ sets of credentials. The API key and secret identify the requester.
 
 1. Installation
    1. Dependent libraries The following dependent libraries were installed.
-   > pip install singer-python
    > pip install requests
    2. Install from pypi using pip
    > pip install python-outreach

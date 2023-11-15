@@ -1,15 +1,14 @@
 import time
-from datetime import datetime, timedelta
-
+import logging
 import backoff
 import requests
-import singer
+
+from datetime import datetime, timedelta
 from requests.exceptions import ConnectionError
-from singer import metrics, utils
 
 from .exception import Server5xxError, RateLimitError, ValidationError
 
-LOGGER = singer.get_logger()
+LOGGER = logging.get_logger(name=__name__)
 
 
 class OutreachClient(object):
@@ -58,7 +57,7 @@ class OutreachClient(object):
 
     @backoff.on_exception(backoff.expo, (Server5xxError, RateLimitError, ConnectionError), max_tries=5, factor=3)
     # Rate Limit: https://api.outreach.io/api/v2/docs#rate-limiting
-    @utils.ratelimit(10000, 3600)
+    # TODO: put another ratelimiter in
     def request(self, method, path=None, url=None, skip_quota=False, **kwargs):
         if url is None and (self.__access_token is None or self.__expires_at <= datetime.utcnow()):
             self.refresh()
@@ -79,10 +78,6 @@ class OutreachClient(object):
 
         if self.__user_agent:
             kwargs['headers']['User-Agent'] = self.__user_agent
-
-        with metrics.http_request_timer(endpoint) as timer:
-            response = self.__session.request(method, url, **kwargs)
-            timer.tags[metrics.Tag.http_status_code] = response.status_code
 
         if response.status_code >= 500:
             raise Server5xxError(response.text)
