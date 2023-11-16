@@ -78,9 +78,8 @@ class OutreachClient(object):
         if self.__user_agent:
             kwargs['headers']['User-Agent'] = self.__user_agent
 
-        with metrics.http_request_timer(endpoint) as timer:
-            response = self.__session.request(method, url, **kwargs)
-            timer.tags[metrics.Tag.http_status_code] = response.status_code
+
+        response = self.__session.request(method, url, **kwargs)
 
         if response.status_code >= 500:
             raise Server5xxError(response.text)
