@@ -57,7 +57,6 @@ class OutreachClient(object):
 
     @backoff.on_exception(backoff.expo, (Server5xxError, RateLimitError, ConnectionError), max_tries=5, factor=3)
     # Rate Limit: https://api.outreach.io/api/v2/docs#rate-limiting
-    @utils.ratelimit(10000, 3600)
     def request(self, method, path=None, url=None, skip_quota=False, **kwargs):
         if url is None and (self.__access_token is None or self.__expires_at <= datetime.utcnow()):
             self.refresh()
